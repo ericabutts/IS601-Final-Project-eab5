@@ -16,7 +16,8 @@ def test_calculator_frontend():
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
-        page.goto("http://localhost:5500")
+        page.goto("http://localhost:5500/frontend/index.html")
+
 
         page.fill("#a","5")
         page.fill("#b","7")

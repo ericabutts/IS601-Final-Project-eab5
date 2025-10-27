@@ -13,42 +13,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout
       - uses: actions/checkout@v3
 
-      # Set up Python
-      - uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      # Install dependencies
-      - run: |
+      - name: Install dependencies
+        run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install playwright
-          playwright install
+          pip install playwright pytest-cov
+          playwright install --with-deps
 
-      # Run unit & integration tests
-      - run: pytest -v --cov=app tests/
+      #Start frontend (simple HTTP server)
+      - name: Start frontend server
+        run: |
+          nohup python3 -m http.server 5500 > frontend.log 2>&1 &
+          sleep 3  # Give it time to start
 
-      # Serve frontend and run Playwright E2E tests
-      - run: |
-          # Start frontend in background
-          python -m http.server 5500 &
-          FRONTEND_PID=$!
+      #Start backend server
+      - name: Start backend server
+        run: |
+          nohup uvicorn main:app --port 8000 > backend.log 2>&1 &
+          sleep 3  # Give backend time to start
 
-          # Wait until frontend is reachable
-          echo "Waiting for frontend at http://localhost:5500 ..."
-          for i in {1..15}; do
-            if curl -s http://localhost:5500 > /dev/null; then
-              echo "Frontend is up!"
-              break
-            fi
-            sleep 1
-          done
+      # Run Playwright E2E tests
+      - name: Run Playwright E2E tests
+        run: pytest -v tests/test_e2e_playwright.py
 
-          # Run Playwright tests
-          pytest -v tests/test_e2e_playwright.py
-
-          # Kill frontend server after tests
-          kill $FRONTEND_PID
+      # Run other tests with coverage
+      - name: Run Unit and Integration Tests
+        run: pytest -v --cov=app --cov-report=term-missing --cov-report=html tests/
