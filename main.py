@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.calculator import Calculator
 from app.operations import AddOperation, SubtractOperation, OperationFactory
 from fastapi.staticfiles import StaticFiles
+import os
+from sqlalchemy import create_engine
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
 
 print("Calculator imported:", Calculator)
 print("AddOperation imported:", AddOperation)
