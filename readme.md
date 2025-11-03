@@ -173,3 +173,21 @@ CI/CD Information: Overview of GitHub Actions workflow and its purpose.
     The tests will fail if the changes result in less than 90% coverage.
 
     You can view the workflow status in your repository under Actions → Workflows.
+
+Accessing FastAPI Docs:
+
+    While Docker is running, access http://localhost:8000/docs to view API endpoints.
+
+Accessing pgAdmin:
+
+    While Docker is running, access http://localhost:5050
+    Username: admin@admin.com
+    Password: admin
+
+    In the left sidebar, click the Query Tool and input the settings.
+    Setting	Value:
+    Host	    db
+    User	    postgres
+    Password	postgres
+    DB Name	    fastapi_db
+    Port        5432

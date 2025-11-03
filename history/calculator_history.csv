@@ -1,1 +1,3 @@
-
+operation,operand1,operand2,result,timestamp
+add,1,1,2,2025-11-03T10:51:29.688982
+root,16,4,2,2025-11-03T10:51:41.385956
