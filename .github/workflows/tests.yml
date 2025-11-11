@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - master
+      - module10
   pull_request:
     branches:
       - main
       - master
+      - module10
 
 jobs:
   test:
