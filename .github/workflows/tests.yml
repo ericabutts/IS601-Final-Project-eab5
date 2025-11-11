@@ -43,10 +43,6 @@ jobs:
           nohup uvicorn main:app --port 8000 > backend.log 2>&1 &
           sleep 3  # Give backend time to start
 
-      # Run Playwright E2E tests
-      - name: Run Playwright E2E tests
-        run: pytest -v tests/test_e2e_playwright.py
-
       # Run other tests with coverage
       - name: Run Unit and Integration Tests
         run: pytest -v --cov=app --cov-report=term-missing --cov-report=html tests/
