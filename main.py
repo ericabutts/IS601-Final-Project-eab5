@@ -21,6 +21,7 @@ from app.schemas import UserCreate, UserRead
 from app.calculator import Calculator
 from app.operations import OperationFactory
 from app.routes_users import router as user_router
+from app.routes_calculations import router as calculation_router
 
 # -----------------------------
 # Create FastAPI app
@@ -47,6 +48,7 @@ app.add_middleware(
 # Include routers
 # -----------------------------
 app.include_router(user_router)
+app.include_router(calculation_router)
 
 # -----------------------------
 # Calculator Setup

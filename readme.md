@@ -201,3 +201,5 @@ Accessing pgAdmin:
     Password	postgres
     DB Name	    fastapi_db
     Port        5432
+
+    If the 'user' table is missing from pgAdmin, create it with the SQL command.
