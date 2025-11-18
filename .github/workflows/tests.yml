@@ -1,4 +1,6 @@
-name: CI Tests
+# .github/workflows/ci-cd.yml
+
+name: CI/CD Pipeline
 
 on:
   push:
@@ -31,18 +33,66 @@ jobs:
           pip install playwright pytest-cov
           playwright install --with-deps
 
-      #Start frontend (simple HTTP server)
+      # Start frontend (simple HTTP server)
       - name: Start frontend server
         run: |
           nohup python3 -m http.server 5500 > frontend.log 2>&1 &
-          sleep 3  # Give it time to start
+          sleep 3
 
-      #Start backend server
-      - name: Start backend server
+      # Run unit tests (no database needed)
+      - name: Run Unit Tests
         run: |
-          nohup uvicorn main:app --port 8000 > backend.log 2>&1 &
-          sleep 3  # Give backend time to start
+          pytest tests/test_calculation_factory.py -v --cov=app.calculation_factory --cov-report=term-missing
+          pytest tests/test_calculation_schemas.py -v --cov=app.schemas --cov-report=term-missing
+          pytest tests/test_calculation_routes.py -v --cov=app.routes_calculations --cov-report=term-missing
 
-      # Run other tests with coverage
-      - name: Run Unit and Integration Tests
-        run: pytest -v --cov=app --cov-report=term-missing --cov-report=html tests/
+      # Run other existing tests
+      - name: Run All Other Tests
+        run: |
+          pytest tests/ -v --cov=app --cov-report=term-missing --cov-report=html --ignore=tests/test_calculation_factory.py --ignore=tests/test_calculation_schemas.py --ignore=tests/test_calculation_routes.py
+
+      # Upload coverage
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: success()
+
+      # Show logs on failure
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Frontend Logs ==="
+          cat frontend.log || echo "No frontend logs"
+          echo "=== Backend Logs ==="
+          cat backend.log || echo "No backend logs"
+
+  # Docker build and push (only on main/master)
+  docker:
+    name: Build and Push Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/calculator-app:latest
+            ${{ secrets.DOCKER_USERNAME }}/calculator-app:${{ github.sha }}
+
+      - name: Image digest
+        run: echo "✅ Docker image pushed successfully!"
