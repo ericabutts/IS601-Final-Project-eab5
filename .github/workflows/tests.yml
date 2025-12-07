@@ -6,11 +6,13 @@ on:
       - main
       - master
       - module10
+      - module12
   pull_request:
     branches:
       - main
       - master
       - module10
+      - module12
 
 jobs:
   test:
