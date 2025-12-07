@@ -21,41 +21,59 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Setup Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      # Setup Node.js (for Playwright)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # Install Python dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install playwright pytest-cov
-          playwright install --with-deps
+          pip install pytest-cov
 
-      # Start frontend (simple HTTP server)
+      # Install Playwright
+      - name: Install Playwright
+        run: |
+          npm install -D @playwright/test
+          npx playwright install --with-deps
+
+      # Start frontend server
       - name: Start frontend server
         run: |
-          nohup python3 -m http.server 5500 > frontend.log 2>&1 &
+          nohup python3 -m http.server 5500 --directory frontend > frontend.log 2>&1 &
           sleep 3
 
       # Start backend server
       - name: Start backend server
         run: |
-          nohup uvicorn main:app --port 8000 > backend.log 2>&1 &
-          sleep 3
+          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+          sleep 5
 
-      # Run all tests with coverage
+      # Run Python tests
       - name: Run Unit and Integration Tests
         run: |
           pytest tests/ -v --cov=app --cov-report=term-missing --cov-report=html
+
+      # Run Playwright E2E tests
+      - name: Run Playwright E2E Tests
+        run: |
+          npx playwright test
 
       # Upload coverage reports
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         if: success()
 
-      # Show logs on failure for debugging
+      # Show logs on failure
       - name: Show logs on failure
         if: failure()
         run: |
