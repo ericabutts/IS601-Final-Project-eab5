@@ -22,22 +22,26 @@
                 return;
             }
 
-            const res = await fetch("http://localhost:8000/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    email,
-                    username: email,
-                    password 
-                })
-            });
+            try {
+                const res = await fetch("http://host.docker.internal:8000/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        email,
+                        username: email,
+                        password 
+                    })
+                });
 
-            if (res.ok) {
-                const data = await res.json();
-                localStorage.setItem("token", data.access_token);
-                document.getElementById("message").textContent = "Registration successful!";
-            } else {
-                document.getElementById("message").textContent = "Error: Could not register";
+                if (res.ok) {
+                    document.getElementById("message").textContent = "Registration successful!";
+                } else {
+                    const data = await res.json();
+                    document.getElementById("message").textContent = data.detail || "Error: Could not register";
+                }
+            } catch (err) {
+                document.getElementById("message").textContent = "Network error: Could not connect to server";
+                console.error(err);
             }
         };
     </script>

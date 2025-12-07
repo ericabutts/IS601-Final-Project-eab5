@@ -150,23 +150,15 @@ Testing Instructions: How to run unit tests and check test coverage.
     # Run all tests in the tests/ folder with coverage report
     pytest -v --cov=app tests/
 
-    # Open coverage report in browser
-    start htmlcov/index.html   # Windows
-    open htmlcov/index.html    # macOS / Linux
-
     # Test End-to-End (e2e) Tests with Playwright
     # In a new terminal run the following commands
     cd frontend
-    python -m http.server 5500
+    python -m http.server 5500 -d frontend/
 
-    # In a new terminal, run the E2E test
-    pytest -v tests/test_e2e_playwright.py
+    # Run FRONTEND REGISTRATION/LOGIN Tests
+    npx playwright test
 
-    # Run integration test on the FastAPI
-    pytest -v tests/test_integration.py
 
-    # Run the tests inside Docker container with pgAdmin
-    docker-compose run backend pytest
 
 
 CI/CD Information: Overview of GitHub Actions workflow and its purpose.
@@ -178,7 +170,7 @@ CI/CD Information: Overview of GitHub Actions workflow and its purpose.
     You can view the workflow status in your repository under Actions → Workflows.
 
     BEFORE RUNNING Frontend Playwright Tests:
-    # if using Python 3, run the Frontend server
+    Run the Frontend server
     python -m http.server 5500 -d frontend/
 
 
