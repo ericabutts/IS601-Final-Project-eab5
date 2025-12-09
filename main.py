@@ -74,6 +74,10 @@ from app.auth import create_access_token
 
 @app.post("/register", response_model=schemas.Token)
 def register_user(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
+    # optional: default username to email if not sent
+    if not user_in.username:
+        user_in.username = user_in.email
+
     existing_user = db.query(models.User).filter(
         (models.User.username == user_in.username) |
         (models.User.email == user_in.email)
@@ -82,9 +86,9 @@ def register_user(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username or email already exists")
     
     user = crud.create_user(db, user_in)
-
     token = create_access_token({"sub": user.email})
     return {"access_token": token, "token_type": "bearer"}
+
 
 @app.post("/login", response_model=schemas.Token)
 def login(login_data: schemas.LoginRequest, db: Session = Depends(get_db)):

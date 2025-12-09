@@ -20,7 +20,9 @@ class UserBase(BaseModel):
     email: EmailStr
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    email: str
+    username: str   # add this
     password: str
 
 

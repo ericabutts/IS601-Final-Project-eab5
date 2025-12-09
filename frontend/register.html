@@ -23,21 +23,22 @@
             }
 
             try {
-                const res = await fetch("http://host.docker.internal:8000/register", {
+                const res = await fetch("http://127.0.0.1:8000/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 
                         email,
-                        username: email,
+                        username: email,  // send username too
                         password 
                     })
                 });
 
+                const data = await res.json();
                 if (res.ok) {
                     document.getElementById("message").textContent = "Registration successful!";
+                    console.log(data);  // token returned
                 } else {
-                    const data = await res.json();
-                    document.getElementById("message").textContent = data.detail || "Error: Could not register";
+                    document.getElementById("message").textContent = data.detail || JSON.stringify(data);
                 }
             } catch (err) {
                 document.getElementById("message").textContent = "Network error: Could not connect to server";
