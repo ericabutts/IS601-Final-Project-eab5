@@ -130,6 +130,7 @@ The following commands are available:
         Second number <Decimal>: the second operand.
 
 Testing Instructions: How to run unit tests and check test coverage.
+    NOTE: BEFORE RUNNING GITHUB ACTIONS, SWITCH TO TEST DATABASE (database.py)
 
     cd IS601_MIDTERM_MODULE
     # Activate virtual environment in Windows
