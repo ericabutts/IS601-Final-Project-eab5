@@ -205,7 +205,7 @@ CURL Commands for testing the API using JWT Authentication Token:
     Register a new user:
     curl -X POST "http://localhost:8000/register" \
     -H "Content-Type: application/json" \
-    -d '{"username":"testuser","email":"test@example.com","password":"testpass"}'
+    -d '{"username":"testuser5","email":"test5@example.com","password":"testpass"}'
 
     Login:
     curl -X POST "http://localhost:8000/login" \
@@ -252,5 +252,15 @@ CURL Commands for testing the API using JWT Authentication Token:
     Quick API Calculator
     curl -X GET "http://localhost:8000/calculate/ADD?a=10&b=5" \
     -H "Authorization: Bearer <JWT_TOKEN>"
+
+    Change password
+    curl -X PUT http://localhost:8000/me/password \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlcmljYUBuaml0LmVkdSIsImV4cCI6MTc2NTc3MDA2N30.YIEYSu6FaJYiO0R7OYKeboJlpP_cZhyiG1TPQyoHV98" \
+    -H "Content-Type: application/json" \
+    -d '{
+    "old_password": "string",
+    "new_password": "newpass123"
+    }'
+
 
 

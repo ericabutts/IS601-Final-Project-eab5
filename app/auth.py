@@ -51,3 +51,28 @@ def read_current_user(current_user: User = Depends(get_current_user)):
     Return the currently logged-in user's information.
     """
     return current_user
+
+from app.security import verify_password, hash_password
+from app import models, schemas
+
+
+@router.put("/me/password")
+def change_password(
+    payload: schemas.PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Change password for the currently logged-in user.
+    """
+
+    # Verify old password
+    if not verify_password(payload.old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Old password is incorrect")
+
+    # Hash and save new password
+    current_user.password_hash = hash_password(payload.new_password)
+
+    db.commit()
+
+    return {"message": "Password updated successfully"}
